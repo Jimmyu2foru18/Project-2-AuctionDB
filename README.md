@@ -81,6 +81,7 @@ python import_ebay_data.py
 ```
 
 ## File Structure
+```bash
 Project2:AuctionDB/
 ├── 1_database_setup.sql
 ├── 2_create_tables.sql
@@ -95,7 +96,7 @@ Project2:AuctionDB/
 ├── EERD.txt
 └── constraints.txt
 └── import_ebay_data.py
-
+```
 ## Requirements
 - MySQL 5.7 or higher
 - Python 3.6+ (for data import)
