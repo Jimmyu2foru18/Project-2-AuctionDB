@@ -1,0 +1,97 @@
+==========================================================
+EERD SETUP 
+==========================================================
+
+AuctionBase EERD Notation
+----------------------------------------------------------
+
+Entities:
+---------
+
+User (strong entity)
+
+UserID (PK)
+Username
+Email
+Name
+Address
+PhoneNumber
+Specialization: Seller | Buyer
+
+
+Item (strong entity)
+--------------------
+
+ItemID (PK)
+Name
+Location
+Description
+StartTime
+EndTime
+StartingPrice
+
+
+Bid (weak entity to Item)
+-------------------------
+
+BidID (PK)
+BidAmount
+BidTime
+
+
+Category (strong entity)
+------------------------
+
+CategoryID (PK)
+Name
+Description
+
+
+Auction (weak entity to Item)
+-----------------------------
+
+Status
+WinningBid
+PaymentStatus
+
+
+ShippingOption (strong entity)
+------------------------------
+
+ShippingOptionID (PK)
+Method
+Price
+DeliveryTime
+
+
+Payment (weak entity)
+---------------------
+
+PaymentID (PK)
+Amount
+PaymentMethod
+
+
+=============================================================
+
+RELATIONSHIPS 
+
+User (1) -- (M) Item (Sells)
+User (1) -- (M) Bid (Places)
+Item (1) -- (M) Bid (Has)
+Item (M) -- (M) Category (Belongs To)
+Auction (1) -- (1) Item (References)
+Auction (1) -- (1) ShippingOption (Uses)
+Auction (1) -- (1) Payment (Processes)
+
+=============================================================
+
+Specialization Sets:
+=============================================================
+User
+
+Total Specialization
+Disjoint
+Subclasses: Seller, Buyer
+
+=============================================================

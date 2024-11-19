@@ -1,0 +1,32 @@
+========================================
+Verify data
+========================================
+
+-- Table Counts
+SELECT COUNT(*) FROM Users;
+SELECT COUNT(*) FROM Items;
+SELECT COUNT(*) FROM Categories;
+SELECT COUNT(*) FROM Bids;
+SELECT COUNT(*) FROM ItemCategories;
+SELECT COUNT(*) FROM Auctions;
+SELECT COUNT(*) FROM ShippingOptions;
+SELECT COUNT(*) FROM SellerReviews;
+SELECT COUNT(*) FROM SystemLogs;
+
+-- Verify Triggers
+SHOW TRIGGERS;
+
+-- Verify Views
+SHOW FULL TABLES WHERE Table_type = 'VIEW';
+
+-- Verify Procedures
+SHOW PROCEDURE STATUS WHERE Db = 'auctionbase';
+
+-- Verify Constraints
+SELECT * FROM information_schema.table_constraints 
+WHERE table_schema = 'auctionbase';
+
+-- Verify Indexes
+SHOW INDEX FROM Items;
+SHOW INDEX FROM Bids;
+SHOW INDEX FROM Users; 

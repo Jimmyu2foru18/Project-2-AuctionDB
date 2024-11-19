@@ -1,0 +1,36 @@
+====================================================================
+Create database
+====================================================================
+
+CREATE DATABASE auctionbase;
+USE auctionbase;
+
+====================================================================
+Modify tables to handle string UserIDs and accommodate JSON data
+====================================================================
+
+
+ALTER TABLE Users MODIFY COLUMN UserID VARCHAR(50) PRIMARY KEY;
+ALTER TABLE Items MODIFY COLUMN SellerID VARCHAR(50);
+ALTER TABLE Bids MODIFY COLUMN BidderID VARCHAR(50);
+
+==================================================================
+Increase string column sizes if needed
+==================================================================
+
+ALTER TABLE Items 
+    MODIFY COLUMN ItemName VARCHAR(255),
+    MODIFY COLUMN Location VARCHAR(255),
+    MODIFY COLUMN Country VARCHAR(100),
+    MODIFY COLUMN Description TEXT;
+	
+=================================================================
+Add indexes for performance
+=================================================================
+
+CREATE INDEX idx_seller ON Items(SellerID);
+CREATE INDEX idx_bidder ON Bids(BidderID);
+CREATE INDEX idx_item ON Bids(ItemID);
+CREATE INDEX idx_auction_end ON Items(EndTime);
+CREATE INDEX idx_bid_time ON Bids(BidTime);
+CREATE INDEX idx_item_price ON Items(CurrentPrice);

@@ -1,0 +1,75 @@
+CONSTRAINTS.TXT
+
+
+AuctionBase System Constraints Implementation
+
+1. User Constraints
+------------------
+* No two users can share the same User ID
+  - Implemented via PRIMARY KEY constraint in Users table
+  - Uniqueness enforced by database engine
+
+* All sellers and bidders must already exist as users
+  - Foreign key constraints on SellerID in Items table
+  - Foreign key constraints on BidderID in Bids table
+
+* The bidder must have a valid credit card
+  - Enforced via CreditCard table with valid_expiration CHECK constraint
+  - Foreign key constraint linking Users to CreditCard table
+
+2. Item Constraints
+------------------
+* No two items can share the same Item ID
+  - PRIMARY KEY constraint on ItemID in Items table
+
+* Every bid must correspond to an actual item
+  - Foreign key constraint between Bids and Items tables
+
+* An item cannot belong to a particular category more than once
+  - Composite PRIMARY KEY on (ItemID, CategoryID) in CategoryItems table
+
+* The end time must be after start time
+  - CHECK constraint (EndTime > StartTime) in Items table
+
+* Current Price matches most recent bid
+  - Enforced via update_bid_count trigger
+
+3. Bidding Constraints
+---------------------
+* No self-bidding
+  - Enforced by prevent_self_bidding trigger
+
+* No simultaneous bids
+  - UNIQUE constraint on (ItemID, BidTime) in Bids table
+
+* Bids must be within auction timeframe
+  - Enforced by validate_bid_time trigger
+
+* No duplicate bid amounts
+  - UNIQUE constraint on (ItemID, BidAmount) in Bids table
+
+* Number of Bids accuracy
+  - Maintained by update_bid_count trigger
+
+* Higher bids only
+  - Enforced by validate_bid_amount trigger
+
+4. Time Constraints
+------------------
+* Bids at current system time
+  - Enforced by validate_bid_time trigger
+
+* Time moves forward only
+  - Enforced by validate_current_time trigger
+
+5. Additional Constraints
+------------------------
+* Shipping deadline enforcement
+  - Enforced by enforce_shipping_deadline trigger
+  - Must ship within 2 business days of payment
+
+* Valid credit card expiration
+  - CHECK constraint on ExpirationDate in CreditCard table
+
+* Unique buyer reviews
+  - UNIQUE constraint on (SellerID, BuyerID, ItemID) in SellerReviews

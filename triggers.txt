@@ -1,0 +1,139 @@
+TRIGGERS 
+
+================================================================
+PREVENTS BIDDING ON OWN ITEMS 
+================================================================
+
+DELIMITER //
+CREATE TRIGGER prevent_self_bidding
+BEFORE INSERT ON Bids
+FOR EACH ROW
+BEGIN
+    DECLARE seller_id INT;
+    SELECT SellerID INTO seller_id FROM Items WHERE ItemID = NEW.ItemID;
+    
+    IF seller_id = NEW.BidderID THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Cannot bid on your own item';
+    END IF;
+END;//
+DELIMITER ;
+
+
+
+==============================================================
+ENSURES CURRENT BID IS HIGHER THAN PREVIOUS BID 
+==============================================================
+
+
+DELIMITER //
+CREATE TRIGGER validate_bid_amount
+BEFORE INSERT ON Bids
+FOR EACH ROW
+BEGIN
+    DECLARE max_bid DECIMAL(10,2);
+    
+    SELECT COALESCE(MAX(BidAmount), 0) INTO max_bid 
+    FROM Bids 
+    WHERE ItemID = NEW.ItemID;
+    
+    IF NEW.BidAmount <= max_bid THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Bid must be higher than previous bids';
+    END IF;
+END;//
+DELIMITER ;
+
+
+
+=============================================================
+VALID BID TIME
+============================================================
+
+DELIMITER //
+CREATE TRIGGER validate_bid_time
+BEFORE INSERT ON Bids
+FOR EACH ROW
+BEGIN
+    DECLARE item_start DATETIME;
+    DECLARE item_end DATETIME;
+    
+    SELECT StartTime, EndTime INTO item_start, item_end 
+    FROM Items 
+    WHERE ItemID = NEW.ItemID;
+    
+    IF NEW.BidTime < item_start OR NEW.BidTime > item_end THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Bid time must be within auction period';
+    END IF;
+END;//
+DELIMITER ;
+
+
+
+==============================================================
+UPDATE NUMBER OF BIDS
+==============================================================
+
+DELIMITER //
+CREATE TRIGGER update_bid_count
+AFTER INSERT ON Bids
+FOR EACH ROW
+BEGIN
+    UPDATE Items 
+    SET NumberOfBids = NumberOfBids + 1,
+        CurrentPrice = NEW.BidAmount
+    WHERE ItemID = NEW.ItemID;
+END;//
+DELIMITER ;
+
+
+
+==============================================================
+VALIDATE CURRENT TIME
+==============================================================
+
+DELIMITER //
+CREATE TRIGGER validate_current_time
+BEFORE INSERT ON Time
+FOR EACH ROW
+BEGIN
+    DECLARE current_system_time DATETIME;
+    
+    SELECT CurrentTime INTO current_system_time 
+    FROM Time LIMIT 1;
+    
+    IF NEW.CurrentTime < current_system_time THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'System time cannot move backward';
+    END IF;
+END;//
+DELIMITER ;
+
+
+
+==============================================================
+ENFORCE SHIPPING DEADLINE
+==============================================================
+
+DELIMITER //
+CREATE TRIGGER enforce_shipping_deadline
+BEFORE UPDATE ON Auctions
+FOR EACH ROW
+BEGIN
+    IF NEW.PaymentStatus = 'Completed' 
+    AND OLD.PaymentStatus != 'Completed' THEN
+        SET NEW.ShipByDate = DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 2 DAY);
+    END IF;
+    
+    IF NEW.TrackingInformation IS NOT NULL 
+    AND OLD.TrackingInformation IS NULL THEN
+        SET NEW.ActualShipDate = CURRENT_TIMESTAMP;
+        
+        IF NEW.ActualShipDate > NEW.ShipByDate THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Shipping deadline exceeded';
+        END IF;
+    END IF;
+END;//
+DELIMITER ;
