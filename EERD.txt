@@ -8,69 +8,92 @@ AuctionBase EERD Notation
 Entities:
 ---------
 
-User (strong entity)
+User
 
-UserID (PK)
-Username
-Email
-Name
-Address
-PhoneNumber
-Specialization: Seller | Buyer
+user_id (Primary Key)
+username
+email
+name
+address
+phone_number
+user_type (buyer, seller, or both)
 
+Item
 
-Item (strong entity)
---------------------
+item_id (Primary Key)
+name
+description
+location
+seller_id (Foreign Key → User.user_id)
 
-ItemID (PK)
-Name
-Location
-Description
-StartTime
-EndTime
-StartingPrice
+Category
 
+category_id (Primary Key)
+name
+description
 
-Bid (weak entity to Item)
--------------------------
+Auction
 
-BidID (PK)
-BidAmount
-BidTime
+auction_id (Primary Key)
+item_id (Foreign Key → Item.item_id)
+start_time
+end_time
+starting_price
+number_of_bids (for performance)
+last_price (for performance)
 
+Bid
 
-Category (strong entity)
-------------------------
+bid_id (Primary Key)
+auction_id (Foreign Key → Auction.auction_id)
+buyer_id (Foreign Key → User.user_id)
+amount
+timestamp
 
-CategoryID (PK)
-Name
-Description
+Review
 
+review_id (Primary Key)
+buyer_id (Foreign Key → User.user_id)
+seller_id (Foreign Key → User.user_id)
+rating (1-5)
+feedback
 
-Auction (weak entity to Item)
------------------------------
+ShippingOption
 
-Status
-WinningBid
-PaymentStatus
+option_id (Primary Key)
+seller_id (Foreign Key → User.user_id)
+price
+estimated_time
+type (e.g., pickup, delivery)
 
+BankInformation
 
-ShippingOption (strong entity)
-------------------------------
+bank_id (Primary Key)
+seller_id (Foreign Key → User.user_id)
+bank_name
+routing_number
+account_number
 
-ShippingOptionID (PK)
-Method
-Price
-DeliveryTime
+Payment
 
+payment_id (Primary Key)
+buyer_id (Foreign Key → User.user_id)
+auction_id (Foreign Key → Auction.auction_id)
+card_number
+expiration_date
+ccv
+name_on_card
+billing_address
+shipping_option_id (Foreign Key → ShippingOption.option_id)
+status (paid/unpaid)
 
-Payment (weak entity)
----------------------
+Shipment
 
-PaymentID (PK)
-Amount
-PaymentMethod
-
+shipment_id (Primary Key)
+auction_id (Foreign Key → Auction.auction_id)
+tracking_number
+status (shipped, delivered, etc.)
+confirmation (buyer confirms delivery)
 
 =============================================================
 
