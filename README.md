@@ -22,31 +22,10 @@ AuctionDB
 - Auctions
 - ShippingOptions
 - SellerReviews
-- SystemLogs
 
 ### Views
 - ActiveAuctions
 - UserRatings
-- AuctionHistory
-- RecentActivity
-
-## Installation
-
-1. Create the database:
-```
-sql
-SOURCE 1_database_setup.sql
-```
-2. Install all components:
-```
-sql
-SOURCE install_auctionbase.sql
-```
-3. Verify installation:
-```
-sql
-SOURCE verify_installation.sql
-```
 
 ## Core Constraints
 1. No duplicate User IDs
