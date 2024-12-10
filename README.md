@@ -1,7 +1,7 @@
 # AuctionBase System
 
 ## Overview
-AuctionBase is an e-commerce auction system similar to eBay. The system allows users to list items for auction, place bids, manage payments, and handle shipping processes.
+AuctionDB
 
 ## Features
 - User registration (buyers and sellers)
